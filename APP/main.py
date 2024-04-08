@@ -59,70 +59,98 @@ baskets  = {}
 async def test():
     return "호출됨"
 
-async def get_minipost(page: int):
-    miniPosts = {}
-    start = (page - 1) * 10 #1페이지 = 0
-    end = page * 10 #1페이지 = 10 
-    for writtenOrder in range(start, end): #10개의 게시판
-        miniPosts[writtenOrder] = previewPosts.get(str(writtenOrder)) 
-    return miniPosts
+
 
 @app.get("/posts/list/{page}", deprecated=False, tags=["게시판"]) #게시판 목록 ?????
 async def get_posts(page: int):
-    miniPosts = await get_minipost(page)
-    return miniPosts
+    #miniPosts = await get_minipost(page)
+        return {
+        "images": List[UploadFile],
+        "title": str,
+        "price": int,
+        "rate": float | None,
+        "completionCount": int | 0,
+        "averageCompletionCount": int,
+    }
 
 @app.get("/post/{member_code}/{written_num}", tags=["게시판"]) #게시판 상세 조회
 async def get_post(member_code: str, written_num: int):
     # if not posts[member_code]: #작동을안함 몰?루
     #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="게시물을 찾을 수 없습니다.")
-    post = posts[member_code][written_num]
-    return posts
+    #post = posts[member_code][written_num]
+    return {
+        "images": List[UploadFile],
+        "title": str,
+        "description": str,
+        "option": List[str] | None,
+        "price": int,
+        "averageCompletionCount": int | None
+    }
 
 @app.post("/post/create", tags=["게시판"]) #게시판 만들기
 async def create_post(post: Post):
-    member_code = str(uuid.uuid4())  # 나중에 회원정보에서 자동생성
-    new_post = {f"post{len(posts[member_code]) + 1}": post.dict()}  # 새 게시물 생성
-    if member_code in posts:
-        posts[member_code].append(new_post)
-    else:
-        posts[member_code] = [new_post]
-    return posts  # 나중에 {"message": "게시판 생성 완료"} 등으로 변경 가능
+    # member_code = str(uuid.uuid4())  # 나중에 회원정보에서 자동생성
+    # new_post = {f"post{len(posts[member_code]) + 1}": post.dict()}  # 새 게시물 생성
+    # if member_code in posts:
+    #     posts[member_code].append(new_post)
+    # else:
+    #     posts[member_code] = [new_post]
+    # return posts  # 나중에 {"message": "게시판 생성 완료"} 등으로 변경 가능
+      return {
+        "message":"게시판 생성 완료"
+    }
 
 @app.put("/post/{member_code}/{written_num}", tags=["게시판"]) #게시판 수정
 async def modify_post(member_code: str, written_num: int, post: Post):
-    posts[member_code][written_num] = post.dict() 
-    return posts[member_code][written_num]
+    # posts[member_code][written_num] = post.dict() 
+    # return posts[member_code][written_num]
+    return {
+        "images": List[UploadFile],
+        "title": str,
+        "description": str,
+        "option": List[str] | None,
+        "price": int,
+        "averageCompletionCount": int | None
+    }
 
-async def get_team_recruitment_list(page: int):
-    miniPosts = {}
-    start = (page - 1) * 10 #1페이지 = 0
-    end = page * 10 #1페이지 = 10 
-    for writtenOrder in range(start, end): #10개의 게시판
-        miniPosts[writtenOrder] = previewPosts.get(str(writtenOrder)) 
-    return miniPosts
+#async def get_team_recruitment_list(page: int):
+    # miniPosts = {}
+    # start = (page - 1) * 10 #1페이지 = 0
+    # end = page * 10 #1페이지 = 10 
+    # for writtenOrder in range(start, end): #10개의 게시판
+    #     miniPosts[writtenOrder] = previewPosts.get(str(writtenOrder)) 
+    # return miniPosts
 
 @app.get("/team_recruitment/posts/{page}", deprecated=True, tags=["팀 모집"])
 async def get_teams_recruitment(page: int):
-    teams = await get_team_recruitment_list(page)
-    return teams
+    #teams = await get_team_recruitment_list(page)
+    #return teams
+
+    return {
+        "title": str,
+        "description": str,
+        "recruitmentStatus": bool
+    }
 
 @app.post("/team_recruitment/create", tags=["팀 모집"]) 
 async def create_team_recruitment(team: Team):
-    member_code = str(uuid.uuid4()) 
-    new_post = {f"post{len(teams[member_code]) + 1}": team.dict()} 
-    if member_code in teams:
-        teams[member_code].append(new_post)
-    else:
-        teams[member_code] = [new_post]
-    return teams
+    # member_code = str(uuid.uuid4()) 
+    # new_post = {f"post{len(teams[member_code]) + 1}": team.dict()} 
+    # if member_code in teams:
+    #     teams[member_code].append(new_post)
+    # else:
+    #     teams[member_code] = [new_post]
+    # return teams
+    return{
+        "성공"
+    }
 
-async def get_reviews(page: int):
-    review={}
-    start = (page-1)*10 
-    end = page*10 
-    for writtenOrder in range(start, end):
-        reviews.update(reviews.get(writtenOrder))
+# async def get_reviews(page: int):
+#     review={}
+#     start = (page-1)*10 
+#     end = page*10 
+#     for writtenOrder in range(start, end):
+#         reviews.update(reviews.get(writtenOrder))
 
 @app.get("/reviews/{page}", tags=["리뷰"])
 async def get_reviews(page:int):
@@ -130,13 +158,16 @@ async def get_reviews(page:int):
 
 @app.post("review/create", tags=["리뷰"])
 async def create_review(review: Review):
-    member_code = str(uuid.uuid4()) 
-    new_post = {f"post{len(review[member_code]) + 1}": review.dict()} 
-    if member_code in reviews:
-        reviews[member_code].append(new_post)
-    else:
-        reviews[member_code] = [new_post]
-    return reviews
+    # member_code = str(uuid.uuid4())
+    # new_post = {f"post{len(review[member_code]) + 1}": review.dict()} 
+    # if member_code in reviews:
+    #     reviews[member_code].append(new_post)
+    # else:
+    #     reviews[member_code] = [new_post]
+    return {
+        id: 1,
+
+    }
 
 @app.post("/login/") #로그인
 async def get_login(id:Annotated[str, Form()], password:Annotated[str, Form()]):
