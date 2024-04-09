@@ -123,7 +123,7 @@ class ProfileOutRespone(BaseModel):
 async def test():
     return "호출됨"
 
-@app.get("/boards/{board_id}/posts/", deprecated=False, tags=["게시판"]) #게시판 목록
+@app.get("/boards/{board_id}/posts", deprecated=False, tags=["게시판"]) #게시판 목록
 async def get_posts(page : int = 1):
     print(page)
     return   {
@@ -136,7 +136,7 @@ async def get_posts(page : int = 1):
         "averageCompletionDay": 0
   }
 
-@app.get("/post/", tags=["게시판"]) #게시판 상세 조회
+@app.get("/post", tags=["게시판"]) #게시판 상세 조회
 async def get_post(memberId: int = 0):
     print(memberId)
     return {
@@ -149,18 +149,18 @@ async def get_post(memberId: int = 0):
         "averageCompletionDay": 0      
     }
 
-@app.post("/boards/{board_id}/post/", tags=["게시판"]) #게시판 만들기
+@app.post("/boards/{board_id}/post", tags=["게시판"]) #게시판 만들기
 async def create_post(post : PostRequest, memberId: int = 0):
     print(memberId)
     return "게시판 생성 완료"
 
-@app.put("/post/", tags=["게시판"]) #게시판 수정
+@app.put("/post", tags=["게시판"]) #게시판 수정
 async def modify_post(post: PostRequest, memberId: int = 0):
     print(memberId)
     return "수정 완료"
 
 
-@app.get("/team/posts/", deprecated=False, tags=["팀 모집"]) #팀 모집 게시판
+@app.get("/team/posts", deprecated=False, tags=["팀 모집"]) #팀 모집 게시판
 async def get_team_recruitment_list(page: int = 0):
     print(page)
     return {
