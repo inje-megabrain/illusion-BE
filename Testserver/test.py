@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, HTTPException, Form, UploadFile
+from fastapi import FastAPI, status, HTTPException, Form, UploadFile, Depends
 from typing import List, Optional, Annotated, Dict
 from pydantic import BaseModel, HttpUrl, UUID4
 import re
@@ -12,55 +12,43 @@ import schemas
 
 app = FastAPI()
 
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @app.get("/")
 async def test():
     return "호출됨"
 
-@app.get("/boards/{board_id}/posts", deprecated=False, tags=["게시판"]) #게시판 목록
-async def get_posts(page : int = 1):
-    posts = PreviewPost(
-        title="title",
-        price=35000,
-        rate=0,
-        completionCount=0,
-        averageCompletionDay=0
-    )
-
-    print(page)
+@app.get("/boards/{board_id}/posts", response_model= list[schemas.Post], deprecated=False, tags=["게시판"]) #게시판 목록
+async def get_posts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    posts = crud.get_users(db, skip=skip, limit=limit)
     return posts
 
 @app.get("/post", tags=["게시판"]) #게시판 상세 조회
-async def get_post(memberId: int = 0):
-    post = PostResponse(
-        title = "title",
-        description = "description",
-        option = ["option1", "option2"],
-        price = 350000,
-        averageCompletionDay = 10    
-    )
-    print(memberId)
+async def get_post(post_id: schemas.PostResponse ,db: Session = Depends(get_db)):
+    post = crud.get_post(db, post_id.postID)
     return post
 
 @app.post("/boards/{board_id}/post", tags=["게시판"]) #게시판 만들기
-async def create_post(post : PostRequest, memberId: int = 0):
-    print(memberId)
-    return "게시판 생성 완료"
+async def create_post(post : schemas.PostRequest, db: Session = Depends(get_db)):
+    post = crud.get_post(db, post.PostID)
+    return post
 
 @app.put("/post", tags=["게시판"]) #게시판 수정
-async def modify_post(post: PostRequest, memberId: int = 0):
-    print(memberId)
-    return "수정 완료"
+async def modify_post(post: schemas.PostResponse, db: Session = Depends(get_db)):
+    post = crud.get_post(db, post.PostID)
+    return post
+    
 
 
-@app.get("/team/posts", deprecated=False, tags=["팀 모집"]) #팀 모집 게시판
-async def get_team_recruitment_list(page: int = 0):
-    teams = PreviewTeam(
-        title = "제목",
-        description = "설명",
-        recruitmentStatus = True
-    )
-    print(page)
-    return teams
+@app.get("/team/posts", response_model= list[schemas.TeamResponse],deprecated=False, tags=["팀 모집"]) #팀 모집 게시판
+async def get_team_recruitment_list(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    teams = crud.get_teams(db, skip=skip, limit=limit)
 
 @app.post("/team/post", tags=["팀 모집"]) #팀 모집 게시판 만들기
 async def create_team_recruitment(team: TeamRequest, memberId: int = 0):

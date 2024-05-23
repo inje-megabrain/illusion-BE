@@ -73,11 +73,16 @@ class Image(Base):
     previewPostImagesId = Column(Integer, ForeignKey("posts.id"))
     previewPostImages = relationship("PreviewPost", back_populates="imagelist")
 
-class TeamPost(Base):
-    __tablename__ = "team_post"
+class PreviewTeamPost(Base):
+    __tablename__ = "teams"
 
+    postId = Column(String, index=True, primary_key=True)
     title = Column(String, index=True)
     recruitmentStatus = Column(Boolean)
+
+class TeamPost(PreviewTeamPost):
+    __tablename__ = "team_post"
+    description = Column(String)
 
 class User(Base):
     __tablename__ = "users"
