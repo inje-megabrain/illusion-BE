@@ -7,15 +7,15 @@ import uuid
 app = FastAPI()
 
 class PostRequest(BaseModel):
-    #images: List[UploadFile]
+    images: List[str]
     title: str
     description: str
-    option: Optional[List[str]] = None
+    option: Optional[List[HttpUrl]] = None
     price: int
     averageCompletionDay: Optional[int] = None
 
 class PostResponse(BaseModel):
-    #images: List[UploadFile]
+    images: List[HttpUrl]
     title: str
     description: str
     option: Optional[List[str]] = None
@@ -23,7 +23,7 @@ class PostResponse(BaseModel):
     averageCompletionDay: Optional[int] = None
 
 class PreviewPost(BaseModel):
-    #images: List[UploadFile]
+    images: HttpUrl
     title: str
     price: int
     rate: Optional[float] = None
@@ -90,27 +90,105 @@ async def test():
 
 @app.get("/boards/{board_id}/posts", deprecated=False, tags=["게시판"]) #게시판 목록
 async def get_posts(page : int = 1):
-    posts = PreviewPost(
-        title="title",
-        price=35000,
-        rate=0,
-        completionCount=0,
-        averageCompletionDay=0
-    )
+    posts = [
+        PreviewPost(
+            images="https://blog.kakaocdn.net/dn/YxTP7/btsytu8PS9l/N269ER2zDdjzw8EUFxSWzK/img.png",
+            title="푸바오",
+            price=5000,
+            rate=3.5,
+            completionCount=2,
+            averageCompletionDay=1
+        ),
+        PreviewPost(
+            images="https://designbase.co.kr/wp-content/uploads/2022/03/illustrator-advanced-15-overview.jpg",
+            title="나만의 작은 일러스트",
+            price=7000,
+            rate=4,
+            completionCount=5,
+            averageCompletionDay=1
+        ),
+        PreviewPost(
+            images="https://d2v80xjmx68n4w.cloudfront.net/gigs/fOV7z1701237488.jpg",
+            title="캐릭터 일러스트",
+            price=50000,
+            rate=5,
+            completionCount=3,
+            averageCompletionDay=10
+        ),
+        PreviewPost(
+            images="https://www.clipstudio.net/wp-content/uploads/2019/08/0033_000.jpg",
+            title="게임 일러스트",
+            price=100000,
+            rate=4,
+            completionCount=23,
+            averageCompletionDay=30
+        ),
+        PreviewPost(
+            images="https://d2v80xjmx68n4w.cloudfront.net/gigs/FGS081673528026.jpg",
+            title="간단하지만 귀여운 일러스트",
+            price=10000,
+            rate=3,
+            completionCount=2,
+            averageCompletionDay=7
+        ),
+        PreviewPost(
+            images="https://mblogthumb-phinf.pstatic.net/MjAyMTA3MTRfMzUg/MDAxNjI2MjYyMDc5Nzc3.a2oZYaolOOHvW5rCZDDUJFiRJAvqN_mMnaB_NyJ4HqMg.VS6CekjVsm9_j3sjt3tq4ydl7ZeHzS5BvPhqA89yVNwg.PNG.gkfngkfn414/%EC%9D%BC%EB%9F%AC%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%9D%B4%ED%84%B0_%EA%B7%80%EC%97%AC%EC%9A%B4_%EA%B7%B8%EB%A6%BC%EA%B7%B8%EB%A6%AC%EA%B8%B020.png?type=w800",
+            title="우리집 고양이",
+            price=5000,
+            rate=2,
+            completionCount=2,
+            averageCompletionDay=1
+        ),
+        PreviewPost(
+            images="https://blog.kakaocdn.net/dn/YxTP7/btsytu8PS9l/N269ER2zDdjzw8EUFxSWzK/img.png",
+            title="title",
+            price=1000000,
+            rate=3.5,
+            completionCount=2,
+            averageCompletionDay=1
+        ),
+        PreviewPost(
+            images="https://d2v80xjmx68n4w.cloudfront.net/gigs/d3BPj1706541860.jpg",
+            title="ai 일러스트",
+            price=50000,
+            rate=0,
+            completionCount=0,
+            averageCompletionDay=5
+        ),
+        PreviewPost(
+            images="https://i.pinimg.com/236x/de/a5/11/dea5116a5c02a05423824ff0fa02177d.jpg",
+            title="웹툰 일러스트",
+            price=70000,
+            rate=4.5,
+            completionCount=7,
+            averageCompletionDay=15
+        ),
+        PreviewPost(
+            images="https://d2v80xjmx68n4w.cloudfront.net/gigs/lHeK11645496339.jpg",
+            title="트렌디 하고 예쁜 일러스트",
+            price=70000,
+            rate=4,
+            completionCount=3,
+            averageCompletionDay=10
+        ),
+        ]
 
-    print(page)
     return posts
 
 @app.get("/post", tags=["게시판"]) #게시판 상세 조회
 async def get_post(memberId: int = 0):
     post = PostResponse(
+        images=[
+            "https://img.freepik.com/premium,-vector/cute-dog-illustration_841637-29.jpg",
+            "https://png.pngtree.com/png-vector/20230221/ourmid/pngtree-cute-dog-illustration-png-image_6612074.png",
+            "https://png.pngtree.com/png-clipart/20230330/original/pngtree-cute-dog-illustration-png-image_9009551.png"
+        ],
         title = "title",
         description = "description",
-        option = ["option1", "option2"],
-        price = 350000,
-        averageCompletionDay = 10    
+        option = ["수정 가능횟수 3회", "옵션2"],
+        price = 35000,
+        averageCompletionDay = 5    
     )
-    print(memberId)
     return post
 
 @app.post("/boards/{board_id}/post", tags=["게시판"]) #게시판 만들기

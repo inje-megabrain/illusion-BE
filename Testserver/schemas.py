@@ -1,6 +1,5 @@
 from pydantic import BaseModel, HttpUrl
 from typing import Optional, List
-import uuid
 from fastapi import UploadFile
 
 class Post(BaseModel):
@@ -13,6 +12,7 @@ class PostRequest(Post):
     option: Optional[List[str]] = None
     price: int
     averageCompletionDay: Optional[int] = None
+    
 
     class Config:
         orm_mode = True
@@ -27,13 +27,16 @@ class PostResponse(PostRequest):
 # Item 클래스에서 id를 제외한 title, description 열 선택하여 가져오기
 #item_data = session.query(Item.title, Item.description).all()
 
-# class PreviewPost(BaseModel):
-#     #images: List[UploadFile]
-#     title: str
-#     price: int
-#     rate: Optional[float] = None
-#     completionCount: Optional[int] = None
-#     averageCompletionDay: Optional[int] = None
+class PreviewPost(BaseModel):
+    #images: List[UploadFile]
+    title: str
+    price: int
+    rate: Optional[float] = None
+    completionCount: Optional[int] = None
+    averageCompletionDay: Optional[int] = None
+
+    class Config:
+        orm_mode = True
 
 class TeamRequest(Post):
     recruitmentStatus: bool = True
@@ -42,6 +45,9 @@ class TeamRequest(Post):
 
 class TeamResponse(TeamRequest):
     pass
+
+    class Config:
+        orm_mode = True
 
 class PreviewTeam(TeamRequest):
     #filther로 description 빼고 가져오기
@@ -67,21 +73,21 @@ class UserCreate(UserBase):
     password : str
 
 class User(UserBase):
-    memeber_id: uuid
-    profileImage: HttpUrl | UploadFile 
-    background_image: HttpUrl | UploadFile
+    memeber_id: str
+    # profileImage: HttpUrl | UploadFile 
+    # background_image: HttpUrl | UploadFile
     introduce: str
     class Config:
         orm_mode = True
 
-# class ProfileRequest(BaseModel):
-#     #profileImage: HttpUrl | UploadFile 
-#     #background_image: HttpUrl | UploadFile
-#     introduce: str
-#     nickname: str
+class ProfileRequest(BaseModel):
+    # profileImage: HttpUrl | UploadFile 
+    # background_image: HttpUrl | UploadFile
+    introduce: str
+    nickname: str
 
-# class ProfileOutRespone(BaseModel):
-#     #profileImage: HttpUrl | UploadFile 
-#     #background_image: HttpUrl | UploadFile
-#     introduce: str
-#     nickname: str
+class ProfileOutRespone(BaseModel):
+    # profileImage: HttpUrl | UploadFile 
+    # background_image: HttpUrl | UploadFile
+    introduce: str
+    nickname: str
