@@ -99,8 +99,6 @@ async def get_signup(
     db_user = crud.get_email(db, user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    if db_user:
-        raise HTTPException(status_code=400, detail="id is already exists")
     #비번 제약걸기
     # if not re.search(r"[a-z]", user.password):
     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="소문자가 없습니다.")

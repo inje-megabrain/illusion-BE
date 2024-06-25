@@ -12,15 +12,11 @@ class Post(Base):
     averageCompletionDay = Column(Integer, nullable=True)
 
     optionList = relationship("Option", back_populates="post")
-    optionsId = Column(Integer, ForeignKey("options.optionId"))
-
     imageList = relationship("Image", back_populates="postImage")
-    imagesId = Column(Integer, ForeignKey("images.imageId"))
-
     reviewList = relationship("Review", back_populates="post")
 
     user = relationship("User", back_populates="postList")
-    userId = Column(Integer, ForeignKey("users.memberId"))
+    memberId = Column(Integer, ForeignKey("users.memberId"))
 
     
 
@@ -39,7 +35,8 @@ class Option(Base):
     optionId = Column(Integer, primary_key=True, index=True)  # 기본 키 추가
     listOption = Column(String, nullable=True)
 
-    post = relationship("Post", back_populates="options")
+    postId = Column(Integer, ForeignKey("post.postId"))
+    post = relationship("Post", back_populates="optionList", foreign_keys=[postId])
 
 class Review(Base):
     __tablename__ = "reviews"  # 테이블 이름 수정
@@ -50,12 +47,12 @@ class Review(Base):
     rate = Column(Float)
 
     reviewImageList = relationship("Image", back_populates="reviewImage")
-    reviewImagesId = Column(Integer, ForeignKey("images.imageId"))
 
-    post = relationship("Post", back_populates="reviewList")
     postId = Column(Integer, ForeignKey("posts.postId"))
+    post = relationship("Post", back_populates="reviewList", foreign_keys=[postId])
 
-    user = relationship("User", back_populates="reviewList")
+    memberId = Column(Integer, ForeignKey("user.memberId"))
+    user = relationship("User", back_populates="reviewList", foreign_keys=[memberId])
 
 
 
@@ -72,20 +69,27 @@ class Review(Base):
 class Image(Base):
     __tablename__ = "images"
 
-    imageId = Column(Integer, primary_key=True, index=True)  # 기본 키 추가
+    imageId = Column(Integer, primary_key=True, index=True) 
     fileName = Column(String, nullable=False)
     filePath = Column(String, nullable=False)
 
-    postImage = relationship("Post", back_populates="imageList")
-    reviewImage = relationship("Review", back_populates="reviewImageList")
+    postId = Column(Integer, ForeignKey("postImage.postId"))
+    postImage = relationship("Post", back_populates="imageList", foreign_keys=[postId])
 
-    user = relationship("User", back_populates="profileImage")
+    reviewPostId = Column(Integer, ForeignKey("reviewImage.reviewPostId"))
+    reviewImage = relationship("Review", back_populates="reviewImageList", foreign_keys=[reviewPostId])
+    
+
+    profileImageId = Column(Integer, ForeignKey("user.memberId"))
+    backgroudImageId = Column(Integer, ForeignKey("user.memberId"))
+    user = relationship("User", back_populates="profileImage", foreign_keys=[profileImageId])
+
 
 
 # class PreviewTeamPost(Base):
 #     __tablename__ = "preview_team_posts"  # 테이블 이름 수정
 
-#     previewTeamPostId = Column(Integer, primary_key=True, index=True)  # 기본 키 추가
+#     previewTeamPostId = Column(Integer, primary_key=True, index=True) 
 #     title = Column(String, index=True)
 #     recruitmentStatus = Column(Boolean)
 
@@ -110,15 +114,6 @@ class User(Base):
     introduce = Column(String)
     
     postList = relationship("Post", back_populates="user")
-    postId = Column(Integer, ForeignKey("posts.postId"))
-
     reviewList = relationship("Review", back_populates="user")
-    reviewPostId = Column(Integer, ForeignKey("reviews.reviewPostId"))
-
     teamPostList = relationship("TeamPost", back_populates="user")
-    teamPostId = Column(Integer, ForeignKey("team_posts.teamPostId"))
-
     profileImage = relationship("Image", back_populates="user")
-    profileImageId = Column(Integer, ForeignKey("images.imageId"))
-
-    backgroudImageId = Column(Integer, ForeignKey("images.imageId"))

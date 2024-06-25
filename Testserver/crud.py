@@ -33,7 +33,7 @@ def create_post(db: Session, post: schemas.PostRequest):
         description = post.description,
         price = post.price,
         averageCompletionDay = post.averageCompletionDay,
-        optionsId = post.option,
+        optionList = post.option,
     )
     db.add(db_post)
     db.commit()
@@ -44,7 +44,7 @@ def create_post(db: Session, post: schemas.PostRequest):
 def create_team_post(db: Session, team: schemas.TeamRequest):
     db_team = models.TeamPost(
         title = team.title,
-        dscription = team.description,
+        description = team.description,
         recruitmentStatus = team.recruitmentStatus,
     )
     db.add(db_team)
